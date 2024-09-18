@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: vprocache01              # based on the application.properties file for our application
+spec:
+  ports:
+    - port: 11211                # port based on application.properties file
+      targetPort: vpromc-port    # name of the port defined in memcached Deployment definition file
+      protocol: TCP
+  selector:
+    app: vpromc                  # label of the memcached pod
+  type: ClusterIP

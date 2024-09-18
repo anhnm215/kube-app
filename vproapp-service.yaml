@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: vproapp-service
+spec:
+  ports:
+    - port: 80
+      targetPort: vproapp-port          # port 8080, name defined in vproapp Deployment        
+      protocol: TCP
+  selector:
+    app: vproapp
+  type: LoadBalancer                    # this will launch an Elastic Load Balancer

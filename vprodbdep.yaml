@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vprodb
+  labels:
+    app: vprodb
+spec:
+  selector:
+    matchLabels:
+      app: vprodb                 # pods with this label are considered in this Deployment
+  replicas: 1
+  template:                       # pod definition
+    metadata:
+      labels:
+        app: vprodb               # the pod will have this label
+    spec:                         # specification about the pod
+      containers:
+        - name: vprodb
+          image: anhnm/vprofiledb:latest
+#          args:                   # pass arguments to mysql process
+#            - "--ignore-db-dir=lost+found"
+          volumeMounts:           # map volume to the pod
+            - mountPath: /var/lib/mysql
+              name: vpro-db-data  # name of the volume we created at 'volumes'
+          ports:
+            - name: vprodb-port
+              containerPort: 3306
+          env:                    # environment variables to read the mysql db password we have stored in the secret
+            - name: MYSQL_ROOT_PASSWORD         # var name in the container
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret              # name of the secret
+                  key: db-pass                  # the key in the secret
+      nodeSelector:               # make the db pod to run in the same zone where we have created the volume
+        zone: us-east-2a          # label we have given for the node. The pod will only run on the node which has this label
+      volumes:
+        - name: vpro-db-data
+          awsElasticBlockStore:
+            volumeID: <volume-id-on-aws>
+            fsType: ext4          # filesystem type: format it with ext4
+
+      initContainers:
+        - name: busybox           # can give any name
+          image: busybox:latest   # a lightweight Linux container
+          args: ["rm", "-rf", "/tmp/lost+found"]
+          volumeMounts:
+            - name: vpro-db-data
+              mountPath: /tmp
+  
