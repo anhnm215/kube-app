@@ -20,10 +20,10 @@ spec:
           ports:
             - name: vproapp-port
               containerPort: 8080
-      initContainers:               # when this container work is completed, then only it will run the main container
-        - name: init-mydb           # we want the db container to be created first, then create this pod
+      initContainers:
+        - name: init-mydb
           image: busybox
-          command: ['sh', '-c', 'until nslookup vprodb; do echo waiting for mydb; sleep 2; done;']
-        - name: init-memcache           # we want the db container to be created first, then create this pod
+          command: ['sh','-c', 'until nslookup vprodb.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for mydb; sleep 2; done;']
+        - name: init-memcache
           image: busybox
-          command: ['sh', '-c', 'until nslookup vprocache01; do echo waiting for memcache; sleep 2; done;']
+          command: [ 'sh','-c', 'until nslookup vprocache01.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for mydb; sleep 2; done;' ]
