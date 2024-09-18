@@ -32,11 +32,11 @@ spec:
                   name: app-secret              # name of the secret
                   key: db-pass                  # the key in the secret
       nodeSelector:               # make the db pod to run in the same zone where we have created the volume
-        zone: us-east-2a          # label we have given for the node. The pod will only run on the node which has this label
+        zone: us-east-1a          # label we have given for the node. The pod will only run on the node which has this label
       volumes:
         - name: vpro-db-data
           awsElasticBlockStore:
-            volumeID: <volume-id-on-aws>
+            volumeID: vol-0cc5cc012ec3fdaad
             fsType: ext4          # filesystem type: format it with ext4
 
       initContainers:
