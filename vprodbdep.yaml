@@ -42,8 +42,7 @@ spec:
       initContainers:
         - name: busybox           # can give any name
           image: busybox:latest   # a lightweight Linux container
-          args: ["rm", "-rf", "/tmp/lost+found"]
+          args: ["rm", "-rf", "/tmp/*"]
           volumeMounts:
             - name: vpro-db-data
               mountPath: /tmp
-  
